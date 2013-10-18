@@ -36,6 +36,7 @@ var DCP = (function() {
 
     var URI;
     var params;
+    var best;
     var defaultData;
     var d = new Date();
     var map;
@@ -70,7 +71,7 @@ var DCP = (function() {
         d = new Date();
         var curr_hour = d.getHours();
         var curr_day = d.getDay();
-        console.log(curr_day);
+        if (DEBUG) console.log('hour: ', curr_hour, 'day: ', curr_day);
         meal = '';
         if (curr_day != 0 && curr_day != 6) {//Weekends have different schedule
             if (DEBUG) console.log('Weekday');
@@ -88,10 +89,10 @@ var DCP = (function() {
             }
         } else {
             switch (true) {
-                case (curr_hour < 4):
+                case (curr_hour < 16):
                     meal = 'lunch';
                     break;
-                case (curr_hour >= 4):
+                case (curr_hour >= 16):
                     meal = 'dinner';
                     break;
             }
@@ -114,6 +115,9 @@ var DCP = (function() {
         var meal = getMeal();
         var good_dishes;
         var favorite_dishes;
+        if (DEBUG) {
+            console.log('meal: ', meal);
+        }
 
         if (preference == 'default') {
             good_dishes = defaultData.good_dishes;
@@ -192,9 +196,11 @@ var DCP = (function() {
 
 
     displayBest = function() {
+        calcScores();
         best = '';
         bestScore = 0;
         for (location in menu) {
+            if (DEBUG) console.log('score for ' + location, menu[location]['score']);
             if (menu[location]['score'] > bestScore) {
                 best = location;
                 bestScore = menu[location]['score']
