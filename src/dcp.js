@@ -56,7 +56,9 @@ var DCP = (function() {
     var c3Coords = new google.maps.LatLng(CAFE3_LAT, CAFE3_LON);
     var ckCoords = new google.maps.LatLng(CLARKKERR_LAT, CLARKKERR_LON);
     var crCoords = new google.maps.LatLng(CROSSROADS_LAT, CROSSROADS_LON);
-
+    var directionsDisplay =  new google.maps.DirectionsRenderer({suppressMarkers: true});
+    var directionsService = new google.maps.DirectionsService();
+    
     //formats to 'yyyy-MM-dd'
     formatDate = function() {
         d = new Date();
@@ -160,11 +162,17 @@ var DCP = (function() {
         mapCanvas.style.height = '300px';
         mapCanvas.style.width = '900px';
         document.querySelector('map').appendChild(mapCanvas);
-
+        var lowSat = [{featureType: "all",stylers: [{ saturation: -100 }]}];
         var mapOptions = {
             zoom: 15,
+            styles: lowSat,
             center: meCoords,
             mapTypeControl: false,
+            panControl: false,
+            zoomControl: true,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
             navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
@@ -178,28 +186,53 @@ var DCP = (function() {
 
     };
 
+    function calcRoute(start, end) {
+        var request = {
+            origin:start,
+            destination:end,
+            travelMode: google.maps.TravelMode.WALKING
+        };
+        directionsService.route(request, function(result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(result);
+                //strokeColor
+            }
+        });
+    }
+
     positionHandler = function(pos) {
         if (DEBUG) {
             console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
         }
-
-        
         meCoords = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
         meAccuracy = pos.coords.accuracy;
     };
-
-
 
     positionError = function(msg) {
 
     };
 
+    getCoords = function(location) {
+        var coords;
+        if (location == 'foothill') {
+            coords = fhCoords;
+        } else if (location == 'crossroads') {
+            coords = crCoords;
+        } else if (location == 'cafe3') {
+            coords = c3Coords;
+        } else if (location == 'clarkkerr') {
+            coords = ckCoords;
+        }
+        return coords;
+    };
 
-    addMarker = function(coords, title) {
+    addMarker = function(location) {
+        var coords = getCoords(location);    
+
         var marker = new google.maps.Marker({
             position: coords,
             map: map,
-            title: title
+            title: location
         });
     };
 
@@ -216,8 +249,33 @@ var DCP = (function() {
             }
         }
         $("#best").text(best.charAt(0).toUpperCase() + best.slice(1));
+        addMarker(best);
+        calcRoute(meCoords, getCoords(best));
+        directionsDisplay.setMap(null);
+        
+        directionsDisplay.polylineOptions = {
+            strokeColor: '#00aba6',
+            strokeOpacity: 0.8,
+            strokeWeight: 5
+            }; 
+
+        directionsDisplay.setMap(map);
         return best;
-    }
+    };
+
+    displayMenus = function() {
+        meal = getMeal();
+        formatName = function(location) {
+            for (dish in menu[location][meal]) {
+                name = menu[location][meal][dish]['name'];
+                $('#'+location+' ul').append('<li>'+name+'</li>');
+            }
+        };
+        formatName('foothill');
+        formatName('crossroads');
+        formatName('cafe3');
+        formatName('clarkkerr');
+    };
 
     return {
         parseData: function(data) {
@@ -245,10 +303,11 @@ var DCP = (function() {
                     }
                 }
             }
-            
+            createMap();
             displayBest();
             $('#loading_container').hide();
-            createMap();
+            
+            displayMenus();
             $('#main').fadeIn();
 
             if (DEBUG) console.log('menu: ', menu);
@@ -277,7 +336,7 @@ var DCP = (function() {
         },
 
         addMarker: function(coords, title) {
-            if (DEBUG) addMarker(fhCoords, 'Foothill DC');
+            if (DEBUG) addMarker('foothill');
             addMarker(coords, title);
         },
 
