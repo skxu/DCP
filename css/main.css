@@ -7,3 +7,7 @@
 #mapRow {
 	padding-bottom: 40px;
 }
+
+.main {
+	display:hidden;
+}

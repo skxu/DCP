@@ -40,7 +40,8 @@ var DCP = (function() {
     var defaultData;
     var d = new Date();
     var map;
-
+    var meCoords;
+    var meAccuracy;
     var FAVORITE_WEIGHT = 3;
     var DISTANCE_WEIGHT = 1;
     var CROSSROADS_LAT = 37.866608;
@@ -152,20 +153,17 @@ var DCP = (function() {
 
     }
 
-    positionHandler = function(pos) {
-        if (DEBUG) {
-            console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
-        }
 
+    createMap = function() {
         var mapCanvas = document.createElement('div');
         mapCanvas.id = 'mapCanvas';
         mapCanvas.style.height = '300px';
         mapCanvas.style.width = '900px';
         document.querySelector('map').appendChild(mapCanvas);
-        var coords = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+
         var mapOptions = {
             zoom: 15,
-            center: coords,
+            center: meCoords,
             mapTypeControl: false,
             navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
             mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -173,10 +171,21 @@ var DCP = (function() {
         map = new google.maps.Map($('#mapCanvas')[0], mapOptions);
 
         var markerHere = new google.maps.Marker({
-            position: coords,
+            position: meCoords,
             map: map,
-            title:"You are within a "+pos.coords.accuracy+" meter radius of here"
+            title:"You are within a "+meAccuracy+" meter radius of here"
         });
+
+    };
+
+    positionHandler = function(pos) {
+        if (DEBUG) {
+            console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
+        }
+
+        
+        meCoords = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        meAccuracy = pos.coords.accuracy;
     };
 
 
@@ -196,7 +205,7 @@ var DCP = (function() {
 
 
     displayBest = function() {
-        calcScores();
+        calcScores('default');
         best = '';
         bestScore = 0;
         for (location in menu) {
@@ -206,6 +215,7 @@ var DCP = (function() {
                 bestScore = menu[location]['score']
             }
         }
+        $("#best").text(best.charAt(0).toUpperCase() + best.slice(1));
         return best;
     }
 
@@ -236,8 +246,10 @@ var DCP = (function() {
                 }
             }
             
-            $('#main').append('hello world');
+            displayBest();
             $('#loading_container').hide();
+            createMap();
+            $('#main').fadeIn();
 
             if (DEBUG) console.log('menu: ', menu);
         },
@@ -281,5 +293,6 @@ var DCP = (function() {
 $(document).ready(function() {
     $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent(DCP.getURI()) + '&callback=?', DCP.parseData);
     DCP.updateLocation();
+    $('#main').hide();
 });
 
