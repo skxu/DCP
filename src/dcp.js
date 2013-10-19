@@ -67,7 +67,7 @@ var DCP = (function() {
         var curr_year = d.getFullYear();
         var curr_month = d.getMonth() + 1; //months are 0 based...why?
         var curr_date = d.getDate();
-        return curr_year + '-' + curr_month + '-' + curr_date;
+        return curr_year + '-' + ('0' + curr_month).slice(-2) + '-' + ('0' + curr_date).slice(-2);
 
     };
 
@@ -388,8 +388,8 @@ var DCP = (function() {
         };
         $('#leftButton').remove();
         $('#rightButton').remove();
-        $('#leftOption').append("<a href='#' id='leftButton'><h2><=Show me "+leftOption+" instead</h2></a>");
-        $('#rightOption').append("<a href='#' id='rightButton'><h2>Show me "+rightOption+" instead=></h2></a>");
+        $('#leftOption').append("<a href='#' id='leftButton'><h2><span class='glyphicon glyphicon-chevron-left'></span>Show me "+leftOption+" instead</h2></a>");
+        $('#rightOption').append("<a href='#' id='rightButton'><h2>Show me "+rightOption+" instead<span class='glyphicon glyphicon-chevron-right'></span></h2></a>");
         formatName('foothill');
         formatName('crossroads');
         formatName('cafe3');
@@ -419,11 +419,6 @@ var DCP = (function() {
 
     return {
         parseData: function(data) {
-            if (DEBUG) {
-                console.log("foothill lunch contents: ", data.contents.lunch.foothill);
-            }
-            
-
             for (meal in data.contents) {
                 if (DEBUG) console.log ('meal', data.contents[meal]);
                 for (location in data.contents[meal]) {

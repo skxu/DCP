@@ -1,7 +1,6 @@
 {
     "good_dishes": [
         "French Fries",
-        "Baked Ziti",
         "ShakShuka (EGGS POACHED IN TOMATO)",
         "Pork Sausage Patty",
         "New England Clam Chowder",
@@ -21,13 +20,94 @@
         "Authentic Asian Char Siu BBQ Pork  (contains alcohol)", 
         "Shrimp & Roasted Corn Chowder", 
         "Teriyaki Mushrooms, Oyster, Shiitake & White",
-        "Belgian Waffles"
+        "Belgian Waffles",
+        "BBQ Spare Ribs",
+        "Make Your Own Sundae",
+        "Shoestring French Fries",
+        "Meat Lovers Pizza",
+        "Pork Potstickers",
+        "Made To Order Shrimp Cesar Salad",
+        "Spicy Waffle French Fries",
+        "Omelet Bar w/Organic Eggs",
+        "Fresh Mashed Potatoes",
+        "Nacho Cheese Bar",
+        "Roast Beef",
+        "Savory Crepe Bar",
+        "Sweet Crepe Bar",
+        "Corn Tortillas",
+        "Chicken Mami Noodle Bar",
+        "Grilled Tri-tip",
+        "Harry's Alfredo Sauce",
+        "Alfredo Sauce",
+        "Beef Sheperd's Pie",
+        "Creamy Pesto Sauce",
+        "Ramen Bar (contains pork, alcohol)",
+        "Ramen Bar",
+        "Fried Chicken Sandwich",
+        "Pasta w/Sundried Tom/Artichoke",
+        "Korean Tacos, A La Kogi",
+        "Caesar Chicken Salad MTO",
+        "Pho Bar",
+        "Red Velvet Cake",
+        "Chicken Burrito",
+        "Orange Chicken",
+        "Ham Fried Rice",
+        "Mai Pham Scallion Noodles",
+        "Linguini and Clams",
+        "Udon Noodle Bar",
+        "Pork Shumai",
+        "Home Fries",
+        "Quarterpound Southwest Burger",
+        "Meatball Sub",
+        "Beef Tacos",
+        "Mashed Potato Bowl",
+        "Garlic Fries",
+        "Burrito Bar",
+        "Sauteed Zucchini",
+        "Tandoori Chicken Thighs",
+        "Mexican Home Fries",
+        "Beef Bulgogi",
+        "Chocolate Chip Krispie Bar (contains pork gelatin)",
+        "Sausage Bar",
+        "Buffalo Wings",
+        "Wings Bar",
+        "Wing Bar",
+        "Beef Fajitas",
+        "Harry's Macaroni & Cheese",
+        "Macaroni & Cheese",
+        "Chicken Chow Mein",
+        "Fried Chicken",
+        "Korean Rice Bowl",
+        "Pork Schnitzel",
+        "Peruvian Shrump Ceviche",
+        "Ho Fun Noodle Soup",
+        "Sauteed Spinach w/ Garlic",
+        "Chicken Nuggets"
+
+
+
+
+
+
+
+
         
     ],
 
     "favorite_dishes": [
+
+        "Beef Bulgogi",
+        "Burrito Bar",
+        "Beef Tacos",
+        "Quarterpound Southwest Burger",
+        "Orange Chicken",
+        "Chicken Burrito",
+        "Korean Tacos, A La Kogi",
+        "Grilled Tri-tip",
+        "Roast Beef",
         "Pan Fried Tilapia w/Lemon Caper Brown Butter",
         "Pumpkin Pie",
+        "Spicy Waffle French Fries",
         "German Chocolate Cake",
         "Red Velvet Cake",
         "Waffle Fries",
@@ -36,8 +116,7 @@
         "Garlic Fries",
         "Caramelized Onion & Bacon Pizza", 
         "Garlic Roasted Red Potatoes",
-        "Blueberry Coffeecake",
-        "Shortbread Cookies"
+        "Blueberry Coffeecake"
     ]
 }
 
