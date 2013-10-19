@@ -1,9 +1,10 @@
 {
-	"good_dishes": [
+    "good_dishes": [
+        "French Fries",
+        "Baked Ziti"
+    ],
 
-	],
+    "favorite_dishes": [
 
-	"favorite_dishes": [
-
-	]
+    ]
 }

@@ -7,30 +7,40 @@ var DCP = (function() {
         "foothill": {
             "breakfast": [],
             "lunch": [],
-            "dinner": []
+            "dinner": [],
+            "distance": 1,
+            "score": 0
         },
         "crossroads": {
             "breakfast": [],
             "lunch": [],
-            "dinner": []
+            "dinner": [],
+            "distance": 1,
+            "score": 0
         },
         "cafe3": {
             "breakfast": [],
             "lunch": [],
-            "dinner": []
+            "dinner": [],
+            "distance": 1,
+            "score": 0
         },
         "clarkkerr": {
             "breakfast": [],
             "lunch": [],
-            "dinner": []
+            "dinner": [],
+            "distance": 1,
+            "score": 0
         }
     };
 
     var URI;
     var params;
+    var defaultData;
     var d = new Date();
 
-    var example =[];
+    var FAVORITE_WEIGHT = 3;
+    var DISTANCE_WEIGHT = 1;
 
 
     //formats to 'yyyy-MM-dd'
@@ -81,16 +91,44 @@ var DCP = (function() {
     params = 'date=' + formatDate();
     
 
+    
+    
+
+    $.getJSON("data/default.json", function(data) {
+        defaultData = data;
+    });
+
     calcScores = function(preference) {
+        var meal = getMeal();
         var good_dishes;
         var favorite_dishes;
-        var meal = getMeal();
 
         if (preference == 'default') {
-            $.getJSON("data/default.json", function(data) {
-                good_dishes = data.good_dishes;
-                favorite_dishes = data.favorite_dishes;
-            });
+            good_dishes = defaultData.good_dishes;
+            favorite_dishes = defaultData.favorite_dishes;
+        }
+
+        for (location in menu) {
+            score = 0;
+            if (DEBUG) {
+                console.log('calcScores: location in menu: ',location);
+                console.log('calcScores: menu.location.meal: ', menu[location][meal]);
+            }
+            for (dish in menu[location][meal]) {
+                if (DEBUG) console.log('calcScores: dishes', menu[location][meal][dish]['name']);
+                name = menu[location][meal][dish]['name'];
+                if (good_dishes.indexOf(name) > -1) {
+                    if (DEBUG) console.log('matched!');
+                    score+=1;
+                }
+                if (favorite_dishes.indexOf(name) > -1) {
+                    score+= 1 * FAVORITE_WEIGHT;
+                }
+            }
+
+            distance = menu[location]['distance'];
+            menu[location]['score'] = score * (1/(distance * DISTANCE_WEIGHT));
+
         }
 
 
@@ -158,12 +196,9 @@ var DCP = (function() {
             return getMeal();
         },
 
-        setLocation: function(loc) {
-            location = loc;
-        },
-
-        getLocation: function() {
-            return location;
+        calcScores: function() {
+            calcScores('default');
+            return menu;
         }
     };
 })();
