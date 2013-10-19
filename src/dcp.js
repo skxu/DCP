@@ -35,6 +35,9 @@ var DCP = (function() {
         }
     };
 
+    var lazy = false;
+    var closest;
+
     var URI;
     var params;
     var best;
@@ -157,7 +160,7 @@ var DCP = (function() {
                 }
             }
             distance = menu[location]['distance'];
-            menu[location]['score'] = score * (1/(distance * DISTANCE_WEIGHT));
+            menu[location]['score'] = score;
         }
     }
 
@@ -208,6 +211,44 @@ var DCP = (function() {
         });
     }
 
+    //for calculating distances
+    rad = function(x) {return x*Math.PI/180;}
+
+    distHaversine = function(p1, p2) {
+      var R = 6371; // earth's mean radius in km
+      var dLat  = rad(p2.lat() - p1.lat());
+      var dLong = rad(p2.lng() - p1.lng());
+
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong/2) * Math.sin(dLong/2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var d = R * c;
+
+      return d.toFixed(3);
+    }
+
+    calcDist = function(place) {
+        if (place !== undefined) {
+            return menu[place]['distance'];
+        }
+        dist = 99999999999;
+        menu['foothill']['distance'] = distHaversine(fhCoords, meCoords);
+        menu['crossroads']['distance'] = distHaversine(crCoords, meCoords);
+        menu['cafe3']['distance'] = distHaversine(c3Coords, meCoords);
+        menu['clarkkerr']['distance'] = distHaversine(ckCoords, meCoords);
+
+        for (location in menu) {
+            if (menu[location]['distance'] <= dist) {
+                closest = location;
+                dist = menu[location]['distance'];
+            }
+        }
+        
+
+    };
+
+
+
     positionHandler = function(pos) {
         if (DEBUG) {
             console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
@@ -250,16 +291,22 @@ var DCP = (function() {
     }
 
     displayBest = function() {
-        calcScores('default');
-        best = '';
-        bestScore = 0;
-        for (location in menu) {
-            if (DEBUG) console.log('score for ' + location, menu[location]['score']);
-            if (menu[location]['score'] > bestScore) {
-                best = location;
-                bestScore = menu[location]['score']
+        if (lazy === false) { 
+            calcScores('default');
+            best = '';
+            bestScore = 0;
+            for (location in menu) {
+                if (DEBUG) console.log('score for ' + location, menu[location]['score']);
+                if (menu[location]['score'] > bestScore) {
+                    best = location;
+                    bestScore = menu[location]['score']
+                }
             }
+        } else if (lazy === true) {
+            best = closest;
+            lazy = false;
         }
+        
 
         $('#foothillCol').css("box-shadow", "0px 0px 0px #000");
         $('#crossroadsCol').css("box-shadow", "0px 0px 0px #000");
@@ -278,7 +325,7 @@ var DCP = (function() {
         $('#header_text').remove();
         $('#header').append("<p id='header_text' align='center'>"+'</p>');
         $('#header_text').text(upperCaseFirstChar(getMeal()));
-        
+        $("#distance").text('Distance: ' + calcDist(best));
         directionsDisplay.polylineOptions = {
             strokeColor: '#00aba6',
             strokeOpacity: 0.8,
@@ -306,6 +353,13 @@ var DCP = (function() {
             $('#main').fadeOut();
             $('#loading_container').fadeIn();
             setMeal(rightOption);
+            window.setTimeout(resetMenus, 500);
+            setButtons();
+        });
+        $('#lazy_button').click(function() {
+            $('#main').fadeOut();
+            $('#loading_container').fadeIn();
+            lazy = true;
             window.setTimeout(resetMenus, 500);
             setButtons();
         });
@@ -439,13 +493,20 @@ var DCP = (function() {
                     }
                 }
             }
+            calcDist();
             createMap();
             displayBest();
             $('#loading_container').hide();
             
             displayMenus();
             
-
+            $('#lazy_button').click(function() {
+                lazy = true;
+                $('#main').fadeOut();
+                $('#loading_container').fadeIn();
+                window.setTimeout(resetMenus, 500);
+                setButtons();
+            });
             $('#main').fadeIn();
             
             if (DEBUG) console.log('menu: ', menu);

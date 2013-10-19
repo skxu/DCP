@@ -6,6 +6,15 @@
 	margin-top: -180px;
 }
 
+.label_container {
+	text-align: center;
+	font-size: 18px;
+}
+
+#lazy {
+	TEXT-DECORATION:underline;
+}
+
 #mapRow {
 	padding-bottom: 40px;
 }
