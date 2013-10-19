@@ -188,14 +188,14 @@ var DCP = (function() {
 
     };
 
-    function clearOverlays() {
+    clearOverlays = function() {
       for (var i = 0; i < markersArray.length; i++ ) {
         markersArray[i].setMap(null);
       }
       markersArray = [];
     }
 
-    function calcRoute(start, end) {
+    calcRoute = function(start, end) {
         var request = {
             origin:start,
             destination:end,
@@ -345,17 +345,17 @@ var DCP = (function() {
                 var vegan = menu[location][meal][dish]['vegan'];
                 var vegetarian = menu[location][meal][dish]['vegetarian'];
                 if (vegan === true && vegetarian === true) {
-                    $('#'+location+' ul').append("<p><li class='vegan'>"+name+'</li></p>');
+                    $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');
                 } else if (vegan === true) {
-                    $('#'+location+' ul').append("<p><li class='vegan'>"+name+'</li></p>');    
+                    $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');    
                 } else if (vegetarian === true) {
-                    $('#'+location+' ul').append("<p><li class='vegetarian'>"+name+'</li></p>');
+                    $('#'+location+' tbody').append("<tr><td class='vegetarian'>"+name+'</td></tr>');
                 } else {
-                    $('#'+location+' ul').append('<p><li>'+name+'</li></p>');
+                    $('#'+location+' tbody').append('<tr><td>'+name+'</td></tr>');
                 }
             }
             if (menu[location][meal].length === 0) {
-                $('#'+location+' ul').append("<li class='italic'>Closed</li>");
+                $('#'+location+' ul').append("<tr class='italic<td>'>Closed</td></tr>");
             }
         };
         $('#leftButton').remove();

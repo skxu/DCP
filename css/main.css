@@ -42,16 +42,8 @@ a:active  { color: #000 }
 	background-color: rgb(245,240,245);
 }
 
-ul li {
-	display:inline;
-	padding-left: 5px;
-	padding-right: 5px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	border: 1px solid rgb(221,221,221);
-	background-color: rgb(250,245,245);
-	margin: 1 px;
-	font-size: 16px;
+tr {
+	
 }
 
 
