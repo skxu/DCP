@@ -42,17 +42,27 @@ a:active  { color: #000 }
 	background-color: rgb(245,240,245);
 }
 
-tr {
-	
+
+
+.good {
+	font-weight: 600;
 }
 
 
 .vegan:after {
 	content:url('../img/vegan.png');
-	padding-bottom: -20px;
 }
 
 .vegetarian:after{
 	content:url('../img/vegetarian.png');
 }
 
+.favorite {
+	border: 1px solid rgb(220,220,220);
+	position: relative;
+	z-index: 1000;
+	font-size: 18px;
+	box-shadow: 4px 4px 8px #CCC;
+	font-weight: 800;
+
+}

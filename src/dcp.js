@@ -123,11 +123,11 @@ var DCP = (function() {
     $.getJSON("data/default.json", function(data) {
         defaultData = data;
     });
-
+    var good_dishes;
+    var favorite_dishes;
     calcScores = function(preference) {
         var meal = getMeal();
-        var good_dishes;
-        var favorite_dishes;
+        
         if (DEBUG) {
             console.log('meal: ', meal);
         }
@@ -305,10 +305,10 @@ var DCP = (function() {
     };
 
     resetMenus = function() {
-        $('ul').empty();
+        $('tbody').empty();
         clearOverlays();
-        displayMenus();
         displayBest();
+        displayMenus();
         $('#loading_container').fadeOut('slow');
         $('#main').fadeIn('slow');
         setButtons();
@@ -344,18 +344,41 @@ var DCP = (function() {
                 name = menu[location][meal][dish]['name'];
                 var vegan = menu[location][meal][dish]['vegan'];
                 var vegetarian = menu[location][meal][dish]['vegetarian'];
-                if (vegan === true && vegetarian === true) {
-                    $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');
-                } else if (vegan === true) {
-                    $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');    
-                } else if (vegetarian === true) {
-                    $('#'+location+' tbody').append("<tr><td class='vegetarian'>"+name+'</td></tr>');
+                console.log(favorite_dishes.indexOf(name));
+                if (favorite_dishes.indexOf(name) > -1) {
+                    if (vegan === true && vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='favorite vegan'>"+name+'</td></tr>');
+                    } else if (vegan === true) {
+                        $('#'+location+' tbody').append("<tr><td class='favorite vegan'>"+name+'</td></tr>');    
+                    } else if (vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='favorite vegetarian'>"+name+'</td></tr>');
+                    } else {
+                        $('#'+location+' tbody').append("<tr><td class='favorite'>"+name+'</td></tr>');
+                    }
+                } else if (good_dishes.indexOf(name) > -1) {
+                    if (vegan === true && vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='good vegan'>"+name+'</td></tr>');
+                    } else if (vegan === true) {
+                        $('#'+location+' tbody').append("<tr><td class='good vegan'>"+name+'</td></tr>');    
+                    } else if (vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='good vegetarian'>"+name+'</td></tr>');
+                    } else {
+                        $('#'+location+' tbody').append("<tr><td class='good'>"+name+'</td></tr>');
+                    }
                 } else {
-                    $('#'+location+' tbody').append('<tr><td>'+name+'</td></tr>');
+                    if (vegan === true && vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');
+                    } else if (vegan === true) {
+                        $('#'+location+' tbody').append("<tr><td class='vegan'>"+name+'</td></tr>');    
+                    } else if (vegetarian === true) {
+                        $('#'+location+' tbody').append("<tr><td class='vegetarian'>"+name+'</td></tr>');
+                    } else {
+                        $('#'+location+' tbody').append('<tr><td>'+name+'</td></tr>');
+                    }
                 }
             }
             if (menu[location][meal].length === 0) {
-                $('#'+location+' ul').append("<tr class='italic<td>'>Closed</td></tr>");
+                $('#'+location+' tbody').append("<tr class='italic'><td>Closed</td></tr>");
             }
         };
         $('#leftButton').remove();
