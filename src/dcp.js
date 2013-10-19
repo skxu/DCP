@@ -325,7 +325,7 @@ var DCP = (function() {
         $('#header_text').remove();
         $('#header').append("<p id='header_text' align='center'>"+'</p>');
         $('#header_text').text(upperCaseFirstChar(getMeal()));
-        $("#distance").text('Distance: ' + calcDist(best));
+        $("#distance").text('Distance: ' + calcDist(best) + ' km');
         directionsDisplay.polylineOptions = {
             strokeColor: '#00aba6',
             strokeOpacity: 0.8,
