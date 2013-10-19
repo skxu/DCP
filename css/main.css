@@ -1,7 +1,9 @@
 .loading {
-	background: url('../img/loading.gif') no-repeat center center;
-	width: 24px;
-	height: 24px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -180px;
+	margin-top: -180px;
 }
 
 #mapRow {
