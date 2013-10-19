@@ -204,7 +204,6 @@ var DCP = (function() {
         directionsService.route(request, function(result, status) {
             if (status == google.maps.DirectionsStatus.OK) {
                 directionsDisplay.setDirections(result);
-                //strokeColor
             }
         });
     }
@@ -270,6 +269,7 @@ var DCP = (function() {
             best = 'All Closed!';
         }
         $("#best").text(upperCaseFirstChar(best));
+        $('#header_text').remove();
         $('#header').append("<p id='header_text' align='center'>"+'</p>');
         $('#header_text').text(upperCaseFirstChar(getMeal()));
         directionsDisplay.polylineOptions = {
@@ -344,8 +344,12 @@ var DCP = (function() {
                 name = menu[location][meal][dish]['name'];
                 var vegan = menu[location][meal][dish]['vegan'];
                 var vegetarian = menu[location][meal][dish]['vegetarian'];
-                if (vegan === true) {
+                if (vegan === true && vegetarian === true) {
+                    $('#'+location+' ul').append("<p><li class='vegan'>"+name+'</li></p>');
+                } else if (vegan === true) {
                     $('#'+location+' ul').append("<p><li class='vegan'>"+name+'</li></p>');    
+                } else if (vegetarian === true) {
+                    $('#'+location+' ul').append("<p><li class='vegetarian'>"+name+'</li></p>');
                 } else {
                     $('#'+location+' ul').append('<p><li>'+name+'</li></p>');
                 }
