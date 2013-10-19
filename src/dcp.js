@@ -342,7 +342,13 @@ var DCP = (function() {
         formatName = function(location) {
             for (dish in menu[location][meal]) {
                 name = menu[location][meal][dish]['name'];
-                $('#'+location+' ul').append('<li>'+name+'</li>');
+                var vegan = menu[location][meal][dish]['vegan'];
+                var vegetarian = menu[location][meal][dish]['vegetarian'];
+                if (vegan === true) {
+                    $('#'+location+' ul').append("<p><li class='vegan'>"+name+'</li></p>');    
+                } else {
+                    $('#'+location+' ul').append('<p><li>'+name+'</li></p>');
+                }
             }
             if (menu[location][meal].length === 0) {
                 $('#'+location+' ul').append("<li class='italic'>Closed</li>");
@@ -350,8 +356,8 @@ var DCP = (function() {
         };
         $('#leftButton').remove();
         $('#rightButton').remove();
-        $('#leftOption').append("<a id='leftButton'><h2><=Show me "+leftOption+" instead</h2></a>");
-        $('#rightOption').append("<a id='rightButton'><h2>Show me "+rightOption+" instead=></h2></a>");
+        $('#leftOption').append("<a href='#' id='leftButton'><h2><=Show me "+leftOption+" instead</h2></a>");
+        $('#rightOption').append("<a href='#' id='rightButton'><h2>Show me "+rightOption+" instead=></h2></a>");
         formatName('foothill');
         formatName('crossroads');
         formatName('cafe3');
@@ -398,7 +404,9 @@ var DCP = (function() {
                         }
                         for (attr in data.contents[meal][location][dish]) {
                             if (attr == 'vegan' || attr == 'vegetarian') {
-                                dishObj[attr] = true;
+                                if (data.contents[meal][location][dish][attr] === true) {
+                                    dishObj[attr] = true;
+                                }
                             }
                         }
                         menu[location][meal].push(dishObj);
