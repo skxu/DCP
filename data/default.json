@@ -1,5 +1,9 @@
 {
-	"dishes": {
+	"good_dishes": [
 
-	}
+	],
+
+	"favorite_dishes": [
+
+	]
 }

@@ -28,7 +28,6 @@ var DCP = (function() {
 
     var URI;
     var params;
-    var all;
     var d = new Date();
 
     var example =[];
@@ -36,6 +35,7 @@ var DCP = (function() {
 
     //formats to 'yyyy-MM-dd'
     formatDate = function() {
+        d = new Date();
         var curr_year = d.getFullYear();
         var curr_month = d.getMonth() + 1; //months are 0 based...why?
         var curr_date = d.getDate();
@@ -45,6 +45,7 @@ var DCP = (function() {
 
     //returns which meal is relevant for the current time of day
     getMeal = function() {
+        d = new Date();
         var curr_hour = d.getHours();
         var curr_day = d.getDay();
         console.log(curr_day);
@@ -80,9 +81,26 @@ var DCP = (function() {
     params = 'date=' + formatDate();
     
 
-    positionHandler = function(position) {
+    calcScores = function(preference) {
+        var good_dishes;
+        var favorite_dishes;
+        var meal = getMeal();
+
+        if (preference == 'default') {
+            $.getJSON("data/default.json", function(data) {
+                good_dishes = data.good_dishes;
+                favorite_dishes = data.favorite_dishes;
+            });
+        }
+
+
+
+
+    }
+
+    positionHandler = function(pos) {
         if (DEBUG) {
-            console.log("Position lat,long: " + position.coords.latitude + "," + position.coords.longitude);
+            console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
         }
     };
 
@@ -97,14 +115,24 @@ var DCP = (function() {
                 console.log("foothill lunch contents: ", data.contents.lunch.foothill);
             }
             
+
             for (meal in data.contents) {
-                console.log (data.contents[meal]);
+                if (DEBUG) console.log ('meal', data.contents[meal]);
                 for (location in data.contents[meal]) {
                     for (dish in data.contents[meal][location]) {
-                        menu[location][meal].push(dish);
+                        dishObj = {
+                            "name":dish,
+                            "vegan":false,
+                            "vegetarian":false,
+                        }
+                        for (attr in data.contents[meal][location][dish]) {
+                            if (attr == 'vegan' || attr == 'vegetarian') {
+                                dishObj[attr] = true;
+                            }
+                        }
+                        menu[location][meal].push(dishObj);
                     }
                 }
-
             }
             
             $('#main').append('hello world');
@@ -114,7 +142,7 @@ var DCP = (function() {
         },
         getURI: function() {
             d = new Date();
-            console.log(URI + params);
+            if(DEBUG) console.log("URI + params: ", URI + params);
             return URI + params;
         },
 
@@ -127,7 +155,6 @@ var DCP = (function() {
         },
 
         getMeal: function() {
-            d = new Date();
             return getMeal();
         },
 
