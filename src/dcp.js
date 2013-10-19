@@ -200,6 +200,7 @@ var DCP = (function() {
             calcScores('default');
             return menu;
         }
+
     };
 })();
 
