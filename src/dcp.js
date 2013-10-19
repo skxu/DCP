@@ -41,7 +41,14 @@ var DCP = (function() {
 
     var FAVORITE_WEIGHT = 3;
     var DISTANCE_WEIGHT = 1;
-
+    var CROSSROADS_LAT = 37.866608;
+    var CROSSROADS_LON = -122.256407;
+    var FOOTHILL_LAT = 37.875365;
+    var FOOTHILL_LON = -122.256042;
+    var CAFE3_LAT = 37.867531;
+    var CAFE3_LON = -122.259604;
+    var CLARKKERR_LAT = 37.863711;
+    var CLARKKERR_LON = -122.249733;
 
     //formats to 'yyyy-MM-dd'
     formatDate = function() {
@@ -140,6 +147,27 @@ var DCP = (function() {
         if (DEBUG) {
             console.log("Position lat,long: " + pos.coords.latitude + "," + pos.coords.longitude);
         }
+
+        var mapCanvas = document.createElement('div');
+        mapCanvas.id = 'mapCanvas';
+        mapCanvas.style.height = '300px';
+        mapCanvas.style.width = '900px';
+        document.querySelector('map').appendChild(mapCanvas);
+        var coords = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        var mapOptions = {
+            zoom: 15,
+            center: coords,
+            mapTypeControl: false,
+            navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map($('#mapCanvas')[0], mapOptions);
+
+        var markerHere = new google.maps.Marker({
+            position: coords,
+            map: map,
+            title:"You are within a "+pos.coords.accuracy+" meter radius of here"
+        });
     };
 
     positionError = function(msg) {
