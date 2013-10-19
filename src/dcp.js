@@ -166,7 +166,7 @@ var DCP = (function() {
         var mapCanvas = document.createElement('div');
         mapCanvas.id = 'mapCanvas';
         mapCanvas.style.height = '300px';
-        mapCanvas.style.width = '900px';
+        mapCanvas.style.width = '100%';
         document.querySelector('map').appendChild(mapCanvas);
         var lowSat = [{featureType: "all",stylers: [{ saturation: -100 }]}];
         var mapOptions = {
