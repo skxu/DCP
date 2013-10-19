@@ -228,8 +228,12 @@ var DCP = (function() {
     }
 
     calcDist = function(place) {
-        if (place !== undefined) {
-            return menu[place]['distance'];
+        if (place != undefined) {
+            if (menu[place]) {
+                return menu[place]['distance'];
+            } else {
+                return 'N/A';
+            }
         }
         dist = 99999999999;
         menu['foothill']['distance'] = distHaversine(fhCoords, meCoords);
