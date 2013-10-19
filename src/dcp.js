@@ -38,6 +38,7 @@ var DCP = (function() {
     var params;
     var defaultData;
     var d = new Date();
+    var map;
 
     var FAVORITE_WEIGHT = 3;
     var DISTANCE_WEIGHT = 1;
@@ -49,6 +50,10 @@ var DCP = (function() {
     var CAFE3_LON = -122.259604;
     var CLARKKERR_LAT = 37.863711;
     var CLARKKERR_LON = -122.249733;
+    var fhCoords = new google.maps.LatLng(FOOTHILL_LAT,FOOTHILL_LON);
+    var c3Coords = new google.maps.LatLng(CAFE3_LAT, CAFE3_LON);
+    var ckCoords = new google.maps.LatLng(CLARKKERR_LAT, CLARKKERR_LON);
+    var crCoords = new google.maps.LatLng(CROSSROADS_LAT, CROSSROADS_LON);
 
     //formats to 'yyyy-MM-dd'
     formatDate = function() {
@@ -161,7 +166,7 @@ var DCP = (function() {
             navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        var map = new google.maps.Map($('#mapCanvas')[0], mapOptions);
+        map = new google.maps.Map($('#mapCanvas')[0], mapOptions);
 
         var markerHere = new google.maps.Marker({
             position: coords,
@@ -170,9 +175,33 @@ var DCP = (function() {
         });
     };
 
+
+
     positionError = function(msg) {
 
     };
+
+
+    addMarker = function(coords, title) {
+        var marker = new google.maps.Marker({
+            position: coords,
+            map: map,
+            title: title
+        });
+    };
+
+
+    displayBest = function() {
+        best = '';
+        bestScore = 0;
+        for (location in menu) {
+            if (menu[location]['score'] > bestScore) {
+                best = location;
+                bestScore = menu[location]['score']
+            }
+        }
+        return best;
+    }
 
     return {
         parseData: function(data) {
@@ -227,6 +256,15 @@ var DCP = (function() {
         calcScores: function() {
             calcScores('default');
             return menu;
+        },
+
+        addMarker: function(coords, title) {
+            if (DEBUG) addMarker(fhCoords, 'Foothill DC');
+            addMarker(coords, title);
+        },
+
+        getBest: function() {
+            return displayBest();
         }
 
     };
