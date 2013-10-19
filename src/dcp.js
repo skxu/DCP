@@ -2,7 +2,8 @@
 
 var DCP = (function() {
     var DEBUG = true;
-    var location = 'crossroads';
+    var location = 'foothill';
+    var mealChosen = '';
     var menu = {
         "foothill": {
             "breakfast": [],
@@ -40,6 +41,7 @@ var DCP = (function() {
     var defaultData;
     var d = new Date();
     var map;
+    var markersArray = [];
     var meCoords;
     var meAccuracy;
     var FAVORITE_WEIGHT = 3;
@@ -58,7 +60,7 @@ var DCP = (function() {
     var crCoords = new google.maps.LatLng(CROSSROADS_LAT, CROSSROADS_LON);
     var directionsDisplay =  new google.maps.DirectionsRenderer({suppressMarkers: true});
     var directionsService = new google.maps.DirectionsService();
-    
+
     //formats to 'yyyy-MM-dd'
     formatDate = function() {
         d = new Date();
@@ -71,6 +73,9 @@ var DCP = (function() {
 
     //returns which meal is relevant for the current time of day
     getMeal = function() {
+        if (mealChosen != '') {
+            return mealChosen;
+        }
         d = new Date();
         var curr_hour = d.getHours();
         var curr_day = d.getDay();
@@ -103,6 +108,11 @@ var DCP = (function() {
         return meal; 
     };
     
+
+    setMeal = function(meal) {
+        mealChosen = meal;
+    };
+
     URI = 'http://ocf.berkeley.edu/~eye/cal-dining/menu?';
     params = 'date=' + formatDate();
     
@@ -133,26 +143,22 @@ var DCP = (function() {
                 console.log('calcScores: location in menu: ',location);
                 console.log('calcScores: menu.location.meal: ', menu[location][meal]);
             }
-            for (dish in menu[location][meal]) {
-                if (DEBUG) console.log('calcScores: dishes', menu[location][meal][dish]['name']);
-                name = menu[location][meal][dish]['name'];
-                if (good_dishes.indexOf(name) > -1) {
-                    if (DEBUG) console.log('matched!');
-                    score+=1;
-                }
-                if (favorite_dishes.indexOf(name) > -1) {
-                    score+= 1 * FAVORITE_WEIGHT;
+            if (menu[location][meal].length != 0) {
+                for (dish in menu[location][meal]) {
+                    if (DEBUG) console.log('calcScores: dishes', menu[location][meal][dish]['name']);
+                    name = menu[location][meal][dish]['name'];
+                    if (good_dishes.indexOf(name) > -1) {
+                        if (DEBUG) console.log('matched!');
+                        score+=1;
+                    }
+                    if (favorite_dishes.indexOf(name) > -1) {
+                        score+= 1 * FAVORITE_WEIGHT;
+                    }
                 }
             }
-
             distance = menu[location]['distance'];
             menu[location]['score'] = score * (1/(distance * DISTANCE_WEIGHT));
-
         }
-
-
-
-
     }
 
 
@@ -178,13 +184,16 @@ var DCP = (function() {
         };
         map = new google.maps.Map($('#mapCanvas')[0], mapOptions);
 
-        var markerHere = new google.maps.Marker({
-            position: meCoords,
-            map: map,
-            title:"You are within a "+meAccuracy+" meter radius of here"
-        });
+        
 
     };
+
+    function clearOverlays() {
+      for (var i = 0; i < markersArray.length; i++ ) {
+        markersArray[i].setMap(null);
+      }
+      markersArray = [];
+    }
 
     function calcRoute(start, end) {
         var request = {
@@ -234,8 +243,12 @@ var DCP = (function() {
             map: map,
             title: location
         });
+        markersArray.push(marker);
     };
 
+    upperCaseFirstChar = function(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     displayBest = function() {
         calcScores('default');
@@ -248,11 +261,17 @@ var DCP = (function() {
                 bestScore = menu[location]['score']
             }
         }
-        $("#best").text(best.charAt(0).toUpperCase() + best.slice(1));
-        addMarker(best);
-        calcRoute(meCoords, getCoords(best));
-        directionsDisplay.setMap(null);
         
+        if (best != '') {
+            addMarker(best);
+            calcRoute(meCoords, getCoords(best));
+            directionsDisplay.setMap(null);
+        } else {
+            best = 'All Closed!';
+        }
+        $("#best").text(upperCaseFirstChar(best));
+        $('#header').append("<p id='header_text' align='center'>"+'</p>');
+        $('#header_text').text(upperCaseFirstChar(getMeal()));
         directionsDisplay.polylineOptions = {
             strokeColor: '#00aba6',
             strokeOpacity: 0.8,
@@ -260,21 +279,104 @@ var DCP = (function() {
             }; 
 
         directionsDisplay.setMap(map);
+
         return best;
+    };
+
+    var leftOption;
+    var rightOption;
+
+    setButtons = function() {
+        
+        $('#leftButton').click(function() {
+            $('#main').fadeOut();
+            $('#loading_container').fadeIn();
+            setMeal(leftOption);
+            window.setTimeout(resetMenus, 500);
+            setButtons();
+        });
+        $('#rightButton').click(function() {
+            $('#main').fadeOut();
+            $('#loading_container').fadeIn();
+            setMeal(rightOption);
+            window.setTimeout(resetMenus, 500);
+            setButtons();
+        });
+    };
+
+    resetMenus = function() {
+        $('ul').empty();
+        clearOverlays();
+        displayMenus();
+        displayBest();
+        $('#loading_container').fadeOut('slow');
+        $('#main').fadeIn('slow');
+        setButtons();
+    };
+
+    //checks for duplicate DOM ids
+    checkRepeat = function(id) {
+        $('['+id+']').each(function() {
+            var ids = $('['+id+'="'+this.id+'"]');
+            if(ids.length>1 && ids[0]==this) {
+                return true;
+            } else {
+                return false;
+            }
+        });
     };
 
     displayMenus = function() {
         meal = getMeal();
+        console.log('MEAL', meal);
+        if (meal == 'breakfast') {
+            leftOption = 'dinner';
+            rightOption = 'lunch';
+        } else if (meal == 'lunch') {
+            leftOption = 'breakfast';
+            rightOption = 'dinner';
+        } else {
+            leftOption = 'lunch';
+            rightOption = 'breakfast';
+        }
         formatName = function(location) {
             for (dish in menu[location][meal]) {
                 name = menu[location][meal][dish]['name'];
                 $('#'+location+' ul').append('<li>'+name+'</li>');
             }
+            if (menu[location][meal].length === 0) {
+                $('#'+location+' ul').append("<li class='italic'>Closed</li>");
+            }
         };
+        $('#leftButton').remove();
+        $('#rightButton').remove();
+        $('#leftOption').append("<a id='leftButton'><h2><=Show me "+leftOption+" instead</h2></a>");
+        $('#rightOption').append("<a id='rightButton'><h2>Show me "+rightOption+" instead=></h2></a>");
         formatName('foothill');
         formatName('crossroads');
         formatName('cafe3');
         formatName('clarkkerr');
+
+        $('#leftButton').click(function() {
+            $('#main').fadeOut();
+            $('#loading_container').fadeIn();
+            setMeal(leftOption);
+            window.setTimeout(resetMenus, 500);
+            
+        });
+        $('#rightButton').click(function() {
+            $('#main').fadeOut();
+            $('#loading_container').fadeIn();
+            setMeal(rightOption);
+            window.setTimeout(resetMenus, 500);
+        });
+
+        var markerHere = new google.maps.Marker({
+            position: meCoords,
+            map: map,
+            title:"You are within a "+meAccuracy+" meter radius of here"
+        });
+        markersArray.push(markerHere);
     };
 
     return {
@@ -308,8 +410,10 @@ var DCP = (function() {
             $('#loading_container').hide();
             
             displayMenus();
-            $('#main').fadeIn();
+            
 
+            $('#main').fadeIn();
+            
             if (DEBUG) console.log('menu: ', menu);
         },
         getURI: function() {
@@ -342,6 +446,10 @@ var DCP = (function() {
 
         getBest: function() {
             return displayBest();
+        },
+
+        setMeal: function(meal) {
+            setMeal(meal);
         }
 
     };

@@ -11,3 +11,13 @@
 .main {
 	display:hidden;
 }
+
+.italic {
+	font-style:italic;
+}
+
+#loading_container {
+	position: absolute;
+	margin-left:50%;
+	margin-top:200px;
+}
