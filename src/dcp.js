@@ -260,11 +260,17 @@ var DCP = (function() {
                 bestScore = menu[location]['score']
             }
         }
+
+        $('#foothillCol').css("box-shadow", "0px 0px 0px #000");
+        $('#crossroadsCol').css("box-shadow", "0px 0px 0px #000");
+        $('#cafe3Col').css("box-shadow", "0px 0px 0px #000");
+        $('#clarkkerrCol').css("box-shadow", "0px 0px 0px #000");
         
         if (best != '') {
             addMarker(best);
             calcRoute(meCoords, getCoords(best));
             directionsDisplay.setMap(null);
+            $('#'+best+'Col').css("box-shadow", "0px 0px 15px rgb(140,160,100)");
         } else {
             best = 'All Closed!';
         }
@@ -272,6 +278,7 @@ var DCP = (function() {
         $('#header_text').remove();
         $('#header').append("<p id='header_text' align='center'>"+'</p>');
         $('#header_text').text(upperCaseFirstChar(getMeal()));
+        
         directionsDisplay.polylineOptions = {
             strokeColor: '#00aba6',
             strokeOpacity: 0.8,
@@ -328,7 +335,6 @@ var DCP = (function() {
 
     displayMenus = function() {
         meal = getMeal();
-        console.log('MEAL', meal);
         if (meal == 'breakfast') {
             leftOption = 'dinner';
             rightOption = 'lunch';
@@ -344,7 +350,6 @@ var DCP = (function() {
                 name = menu[location][meal][dish]['name'];
                 var vegan = menu[location][meal][dish]['vegan'];
                 var vegetarian = menu[location][meal][dish]['vegetarian'];
-                console.log(favorite_dishes.indexOf(name));
                 if (favorite_dishes.indexOf(name) > -1) {
                     if (vegan === true && vegetarian === true) {
                         $('#'+location+' tbody').append("<tr><td class='favorite vegan'>"+name+'</td></tr>');
@@ -415,7 +420,6 @@ var DCP = (function() {
     return {
         parseData: function(data) {
             if (DEBUG) {
-                //console.log(data);
                 console.log("foothill lunch contents: ", data.contents.lunch.foothill);
             }
             
