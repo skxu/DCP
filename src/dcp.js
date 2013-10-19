@@ -2,11 +2,33 @@
 
 var DCP = (function() {
     var DEBUG = true;
-    var breakfast = {};
-    var lunch = [];
-    var dinner;
+    var location = 'crossroads';
+    var menu = {
+        "foothill": {
+            "breakfast": [],
+            "lunch": [],
+            "dinner": []
+        },
+        "crossroads": {
+            "breakfast": [],
+            "lunch": [],
+            "dinner": []
+        },
+        "cafe3": {
+            "breakfast": [],
+            "lunch": [],
+            "dinner": []
+        },
+        "clarkkerr": {
+            "breakfast": [],
+            "lunch": [],
+            "dinner": []
+        }
+    };
+
     var URI;
     var params;
+    var all;
     var d = new Date();
 
     var example =[];
@@ -71,17 +93,24 @@ var DCP = (function() {
     return {
         parseData: function(data) {
             if (DEBUG) {
-                console.log(data);
-                console.log(data.contents.lunch.foothill);
+                //console.log(data);
+                console.log("foothill lunch contents: ", data.contents.lunch.foothill);
             }
             
-            for (food in data.contents.lunch.foothill) {
-                //example.push(location);
-                if (DEBUG) console.log(food);
-                lunch.push(food);
+            for (meal in data.contents) {
+                console.log (data.contents[meal]);
+                for (location in data.contents[meal]) {
+                    for (dish in data.contents[meal][location]) {
+                        menu[location][meal].push(dish);
+                    }
+                }
+
             }
-            if (DEBUG) console.log(lunch);
+            
             $('#main').append('hello world');
+            $('#loading_container').hide();
+
+            if (DEBUG) console.log('menu: ', menu);
         },
         getURI: function() {
             d = new Date();
@@ -100,6 +129,14 @@ var DCP = (function() {
         getMeal: function() {
             d = new Date();
             return getMeal();
+        },
+
+        setLocation: function(loc) {
+            location = loc;
+        },
+
+        getLocation: function() {
+            return location;
         }
     };
 })();
