@@ -391,6 +391,14 @@ var DCP = (function() {
         });
     };
 
+    updateLocation = function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(positionHandler, positionError);
+        } else {
+            console.log('Geolocation not supported');
+        }
+    };
+
     displayMenus = function() {
         meal = getMeal();
         if (meal == 'breakfast') {
@@ -497,6 +505,7 @@ var DCP = (function() {
                     }
                 }
             }
+            updateLocation();
             calcDist();
             createMap();
             displayBest();
