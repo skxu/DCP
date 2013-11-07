@@ -42,6 +42,7 @@ var DCP = (function() {
     var params;
     var best;
     var defaultData;
+    var localData;
     var d = new Date();
     var map;
     var markersArray = [];
@@ -85,8 +86,6 @@ var DCP = (function() {
         if (DEBUG) console.log('hour: ', curr_hour, 'day: ', curr_day);
         meal = '';
         if (curr_day != 0 && curr_day != 6) {//Weekends have different schedule
-            if (DEBUG) console.log('Weekday');
-            console.log(curr_hour);
             switch (true) { //TODO: refactor this into if-else for better performance
                 case (curr_hour < 10):
                     meal = 'breakfast';
@@ -118,14 +117,44 @@ var DCP = (function() {
 
     URI = 'http://ocf.berkeley.edu/~eye/cal-dining/menu?';
     params = 'date=' + formatDate();
-    
-
-    
-    
 
     $.getJSON("data/default.json", function(data) {
         defaultData = data;
+        localStorage.setItem('defaultData', JSON.stringify(defaultData));
+        local = localStorage.getItem('localData');
+        if (local===null) {
+            localStorage.setItem('localData', JSON.stringify(defaultData));
+        }
     });
+
+    initialStore = function() {
+        localStorage.setItem('defaultData', JSON.stringify(defaultData));
+        console.log('defaultData', JSON.parse(localStorage.getItem('defaultData')));
+        
+    };
+
+    storeData = function(food) { 
+        var retrieved = localStorage.getItem('defaultData');
+        data = JSON.parse(retrieved);
+        data['good_dishes'].push(food);
+        localStorage.setItem('defaultData', JSON.stringify(data));
+    };
+
+    saveData = function(option) {
+
+    };
+
+    refreshData = function() {
+        var retrieved = localStorage.getItem('defaultData');
+        defaultData = JSON.parse(retrieved);
+        retrieved = localStorage.getItem('localData');
+        localData = JSON.parse(retrieved);
+        console.log('localData', localData);
+        console.log('defaultData', defaultData);
+        calcScores();
+    };
+
+
     var good_dishes;
     var favorite_dishes;
     calcScores = function(preference) {
@@ -138,6 +167,11 @@ var DCP = (function() {
         if (preference == 'default') {
             good_dishes = defaultData.good_dishes;
             favorite_dishes = defaultData.favorite_dishes;
+        }
+
+        if (preference == 'local') {
+            good_dishes = localData.good_dishes;
+            favorite_dishes = localData.favorite_dishes;
         }
 
         for (location in menu) {
@@ -259,9 +293,28 @@ var DCP = (function() {
         }
         meCoords = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
         meAccuracy = pos.coords.accuracy;
+        $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent(DCP.getURI()) + '&callback=?', DCP.parseData);
     };
 
     positionError = function(msg) {
+        switch(msg.code) {
+            case msg.PERMISSION_DENIED:
+                console.log("PERMISSION_DENIED");
+                window.alert("Remember Sammy Jankis");
+                break;
+            case msg.POSITION_UNAVAILABLE:
+                console.log("POSITION_UNAVAILABLE");
+                window.alert("I think a satellite just blew up");
+                break;
+            case msg.TIMEOUT:
+                console.log("TIMEOUT");
+                window.alert("This is taking too long. I quit.");
+                break;
+            case msg.UNKNOWN_ERROR:
+                console.log("UNKNOWN_ERROR");
+                window.alert("gooby pls");
+                break;
+        }
 
     };
 
@@ -308,7 +361,7 @@ var DCP = (function() {
             }
         } else if (lazy === true) {
             best = closest;
-            lazy = false;
+            //lazy = false;
         }
         
 
@@ -505,7 +558,6 @@ var DCP = (function() {
                     }
                 }
             }
-            updateLocation();
             calcDist();
             createMap();
             displayBest();
@@ -558,6 +610,18 @@ var DCP = (function() {
 
         setMeal: function(meal) {
             setMeal(meal);
+        },
+
+        storeData: function(food) {
+            storeData(food);
+        },
+
+        refreshData: function() {
+            refreshData();
+        },
+
+        initialStore: function() {
+            initialStore();
         }
 
     };
@@ -566,8 +630,8 @@ var DCP = (function() {
 
 
 $(document).ready(function() {
-    $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent(DCP.getURI()) + '&callback=?', DCP.parseData);
     DCP.updateLocation();
+    
     $('#main').hide();
 });
 
