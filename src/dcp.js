@@ -34,7 +34,6 @@ var DCP = (function() {
             "score": 0
         }
     };
-
     var lazy = false;
     var closest;
 
@@ -124,6 +123,12 @@ var DCP = (function() {
         local = localStorage.getItem('localData');
         if (local===null) {
             localStorage.setItem('localData', JSON.stringify(defaultData));
+            localData = defaultData;
+        } else {
+            console.log('localData == undefined', typeof(localData) == undefined);
+            if (!localData) {
+                localData = JSON.parse(local);
+            }
         }
     });
 
@@ -140,8 +145,33 @@ var DCP = (function() {
         localStorage.setItem('defaultData', JSON.stringify(data));
     };
 
-    saveData = function(option) {
+    saveData = function(option,food) {
+        var retrieved = localStorage.getItem('localData');
+        data = JSON.parse(retrieved);
+        if (retrieved===null) {
+            console.log('saveData: localData is null');
+        } else {
+            if (option == 'good_dishes') {
+                if (exists(data['good_dishes'],food)) data['good_dishes'].push(food);
+            } else if (option == 'favorite_dishes') {
+                if (exists(data['good_dishes'],food)) data['good_dishes'].push(food);
+                if (exists(data['favorite_dishes'],food)) data['favorite_dishes'].push(food);
+            } else if (option == 'remove') {
+                if (exists(data['good_dishes'],food)) data['good_dishes'].pop(food);
+                if (exists(data['favorite_dishes'],food)) data['favorite_dishes'].pop(food);
+            } else {
+                console.log('saveData: unknwon option: ', option);
+            }
+        }
+        localStorage.setItem('localData',JSON.stringify(data));
 
+    };
+
+    exists = function(array, item) {
+        if (array.indexOf(item) > -1) {
+            return true;
+        }
+        return false;
     };
 
     refreshData = function() {
@@ -167,9 +197,8 @@ var DCP = (function() {
         if (preference == 'default') {
             good_dishes = defaultData.good_dishes;
             favorite_dishes = defaultData.favorite_dishes;
-        }
-
-        if (preference == 'local') {
+        } else if (preference == 'local') {
+            console.log('localData', localData);
             good_dishes = localData.good_dishes;
             favorite_dishes = localData.favorite_dishes;
         }
@@ -594,8 +623,8 @@ var DCP = (function() {
             return getMeal();
         },
 
-        calcScores: function() {
-            calcScores('default');
+        calcScores: function(preference) {
+            calcScores(preference);
             return menu;
         },
 
@@ -618,6 +647,10 @@ var DCP = (function() {
 
         refreshData: function() {
             refreshData();
+        },
+
+        saveData: function(option,food){
+            saveData(option,food);
         },
 
         initialStore: function() {
